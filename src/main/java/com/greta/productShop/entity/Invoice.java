@@ -71,5 +71,6 @@ public class Invoice {
     }
 
     public void setTotalAmount(double totalAmount) {
+
     }
 }

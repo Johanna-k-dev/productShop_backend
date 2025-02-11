@@ -57,4 +57,13 @@ public UserDao(JdbcTemplate jdbcTemplate){
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
         return count != null && count > 0; // Si le count est supérieur à 0, l'utilisateur existe
     }
+
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
+    }
+
+    public RowMapper<User> getRowMapper() {
+        return rowMapper;
+    }
+
 }
