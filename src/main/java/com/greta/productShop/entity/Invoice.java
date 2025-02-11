@@ -63,4 +63,13 @@ public class Invoice {
     public void setOrderStatus(String orderStatus) {
         this.orderStatus = orderStatus;
     }
+
+    public void setUser(User user) {
+    }
+
+    public void setProduct(Product product) {
+    }
+
+    public void setTotalAmount(double totalAmount) {
+    }
 }

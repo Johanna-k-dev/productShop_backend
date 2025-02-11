@@ -67,8 +67,4 @@ public class Product {
     public void setPoster_path(String poster_path) {
         this.posterPath = poster_path;
     }
-
-
-
-
 }

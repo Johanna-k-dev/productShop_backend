@@ -64,6 +64,4 @@ public class ProductDao implements CrudDao<Product> {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, productName);
         return count != null && count > 0; // Si le count est supérieur à 0, le produit existe
     }
-
-
 }
