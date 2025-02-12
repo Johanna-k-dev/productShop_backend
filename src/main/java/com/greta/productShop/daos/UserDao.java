@@ -45,14 +45,21 @@ public UserDao(JdbcTemplate jdbcTemplate){
 
     @Override
     public Optional<User> findById(int id) {
-        return Optional.empty();
+        String sql = "SELECT * FROM user WHERE id = ?";
+        List<User> users = jdbcTemplate.query(sql, rowMapper, id);
+
+        if (users.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(users.get(0));
     }
 
     @Override
     public void update(User entity) {
-        String sql = "UPDATE user SET email = ?, name = ?, first_name ?,id ?,address ?,phone_number ?,postal_code = ? WHERE id = ?";
-        jdbcTemplate.update(sql, entity.getEmail(), entity.getName(), entity.getFirstName(), entity.getId(), entity.getAddress(),entity.getPhoneNumber(),entity.getPostalNumber());
+        String sql = "UPDATE user SET email = ?, name = ?, first_name = ?, address = ?, phone_number = ?, postal_number = ? WHERE id = ?";
+        jdbcTemplate.update(sql, entity.getEmail(), entity.getName(), entity.getFirstName(), entity.getAddress(), entity.getPhoneNumber(), entity.getPostalNumber(), entity.getId());
     }
+
 
 
     @Override

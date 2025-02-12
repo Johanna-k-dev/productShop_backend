@@ -59,7 +59,7 @@ public class UserController {
     }
 
     // Met à jour un utilisateur
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<String> updateUser(@PathVariable int id, @RequestBody User user) {
         Optional<User> existingUserOpt = userDao.findById(id);
         if (existingUserOpt.isEmpty()) {
@@ -79,7 +79,7 @@ public class UserController {
     }
 
     // Supprimer un utilisateur par ID
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
         Optional<User> user = userDao.findById(id);
         if (user.isPresent()) {
