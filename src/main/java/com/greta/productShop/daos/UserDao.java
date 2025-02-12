@@ -20,11 +20,11 @@ public UserDao(JdbcTemplate jdbcTemplate){
     private final RowMapper<User> rowMapper = (rs, rowNum) -> new User(
             rs.getInt("id"),
             rs.getString("name"),
-            rs.getString("firstName"),
+            rs.getString("first_name"),
             rs.getString("email"),
             rs.getString("address"),
-            rs.getInt("postalNumber"),
-            rs.getString("phoneNumber")
+            rs.getInt("postal_number"),
+            rs.getString("phone_number")
     );
 
     @Override
@@ -35,10 +35,10 @@ public UserDao(JdbcTemplate jdbcTemplate){
         jdbcTemplate.update(sql,
                 entity.getEmail(),
                 entity.getName(),
-                entity.getFirst_name(),
+                entity.getFirstName(),
                 entity.getAddress(),
-                entity.getPhone_number(),
-                entity.getPostal_number()
+                entity.getPhoneNumber(),
+                entity.getPostalNumber()
         );
     }
 
@@ -50,8 +50,8 @@ public UserDao(JdbcTemplate jdbcTemplate){
 
     @Override
     public void update(User entity) {
-        String sql = "UPDATE user SET email = ?, name = ?, firstName ?,id ?,address ?,phone_number ?,postal_code = ? WHERE id = ?";
-        jdbcTemplate.update(sql, entity.getEmail(), entity.getName(), entity.getFirst_name(), entity.getId(), entity.getAddress(),entity.getPhone_number(),entity.getPostal_number());
+        String sql = "UPDATE user SET email = ?, name = ?, first_name ?,id ?,address ?,phone_number ?,postal_code = ? WHERE id = ?";
+        jdbcTemplate.update(sql, entity.getEmail(), entity.getName(), entity.getFirstName(), entity.getId(), entity.getAddress(),entity.getPhoneNumber(),entity.getPostalNumber());
     }
 
 

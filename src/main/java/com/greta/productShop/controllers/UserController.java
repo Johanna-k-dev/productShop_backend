@@ -45,9 +45,10 @@ public class UserController {
 
     // Utilisateur par email
     @GetMapping("/email/{email}")
-    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
-        String sql = "SELECT * FROM user WHERE email = ?";
+    public ResponseEntity<User> getUserByEmail(@PathVariable("email") String email) {
+        System.out.println("Email reçu : " + email);  // 🔥 Log pour debug
 
+        String sql = "SELECT * FROM user WHERE email = ?";
         List<User> users = userDao.getJdbcTemplate().query(sql, userDao.getRowMapper(), email);
 
         if (users.isEmpty()) {
@@ -67,11 +68,11 @@ public class UserController {
         User existingUser = existingUserOpt.get();
         // Mets à jour les informations de l'utilisateur
         existingUser.setName(user.getName());
-        existingUser.setFirst_name(user.getFirst_name());
+        existingUser.setFirstName(user.getFirstName());
         existingUser.setEmail(user.getEmail());
         existingUser.setAddress(user.getAddress());
-        existingUser.setPostal_number(user.getPostal_number());
-        existingUser.setPhone_number(user.getPhone_number());
+        existingUser.setPostalNumber(user.getPostalNumber());
+        existingUser.setPhoneNumber(user.getPhoneNumber());
 
         userDao.update(existingUser);
         return ResponseEntity.ok("Utilisateur mis à jour !");
