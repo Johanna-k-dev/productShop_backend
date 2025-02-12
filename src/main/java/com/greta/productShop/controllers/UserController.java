@@ -6,10 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/user")
 public class UserController {
 
     private final UserDao userDao;
@@ -34,10 +35,11 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
         Optional<User> user = userDao.findById(id);
-        if (user.isPresent()) {
+        if (user.isEmpty()) {
             return ResponseEntity.ok(user.get());
         } else {
             return ResponseEntity.notFound().build();
+
         }
     }
 
@@ -45,18 +47,23 @@ public class UserController {
     @GetMapping("/email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
         String sql = "SELECT * FROM user WHERE email = ?";
-        User user = userDao.getJdbcTemplate().queryForObject(sql, userDao.getRowMapper(), email);
-        return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
+
+        List<User> users = userDao.getJdbcTemplate().query(sql, userDao.getRowMapper(), email);
+
+        if (users.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(users.get(0));
+        }
     }
 
     // Met à jour un utilisateur
     @PutMapping("/{id}")
     public ResponseEntity<String> updateUser(@PathVariable int id, @RequestBody User user) {
         Optional<User> existingUserOpt = userDao.findById(id);
-        if (!existingUserOpt.isPresent()) {
+        if (existingUserOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-
         User existingUser = existingUserOpt.get();
         // Mets à jour les informations de l'utilisateur
         existingUser.setName(user.getName());

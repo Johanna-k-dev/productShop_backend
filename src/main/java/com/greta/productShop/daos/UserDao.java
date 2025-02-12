@@ -26,10 +26,22 @@ public UserDao(JdbcTemplate jdbcTemplate){
             rs.getInt("postalNumber"),
             rs.getString("phoneNumber")
     );
+
     @Override
     public void save(User entity) {
+        // Insertion sans l'ID, car il est auto-incrémenté
+        String sql = "INSERT INTO user (email, name, first_name, address, phone_number, postal_number) VALUES (?, ?, ?, ?, ?, ?)";
 
+        jdbcTemplate.update(sql,
+                entity.getEmail(),
+                entity.getName(),
+                entity.getFirst_name(),
+                entity.getAddress(),
+                entity.getPhone_number(),
+                entity.getPostal_number()
+        );
     }
+
 
     @Override
     public Optional<User> findById(int id) {
@@ -37,18 +49,22 @@ public UserDao(JdbcTemplate jdbcTemplate){
     }
 
     @Override
-    public List<User> findAll() {
-        return List.of();
-    }
-
-    @Override
     public void update(User entity) {
-
+        String sql = "UPDATE user SET email = ?, name = ?, firstName ?,id ?,address ?,phone_number ?,postal_code = ? WHERE id = ?";
+        jdbcTemplate.update(sql, entity.getEmail(), entity.getName(), entity.getFirst_name(), entity.getId(), entity.getAddress(),entity.getPhone_number(),entity.getPostal_number());
     }
+
 
     @Override
     public void deleteById(int id) {
+        String sql = "DELETE FROM user WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 
+    @Override
+    public List<User> findAll() {
+        String sql = "SELECT * FROM product";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     // Méthode pour vérifier si l'utilisateur existe déjà par son email

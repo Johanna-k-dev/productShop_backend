@@ -77,5 +77,4 @@ public class User {
         this.phoneNumber = phone_number;
     }
 
-
 }
