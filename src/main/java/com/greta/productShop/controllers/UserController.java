@@ -23,13 +23,20 @@ public class UserController {
     // Ajouter un utilisateur
     @PostMapping("/add")
     public ResponseEntity<String> addUser(@RequestBody User user) {
-        if (userDao.ifUserExists(user.getEmail())) {
+        System.out.println("📌 Tentative d'ajout de l'utilisateur : " + user);
+        boolean exists = userDao.ifUserExists(user.getEmail());
+        System.out.println("🔍 Utilisateur existe déjà ? " + exists);
+
+        if (exists) {
             return ResponseEntity.badRequest().body("L'utilisateur avec cet email existe déjà.");
         }
-        // Sauvegarder
+
+        // Sauvegarde
         userDao.save(user);
+        System.out.println("✅ Utilisateur ajouté avec succès !");
         return ResponseEntity.ok("Utilisateur ajouté avec succès !");
     }
+
 
     // Utilisateur par ID
     @GetMapping("/{id}")
@@ -46,7 +53,7 @@ public class UserController {
     // Utilisateur par email
     @GetMapping("/email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable("email") String email) {
-        System.out.println("Email reçu : " + email);  // 🔥 Log pour debug
+        System.out.println("Email reçu : " + email);  // Log pour debug
 
         String sql = "SELECT * FROM user WHERE email = ?";
         List<User> users = userDao.getJdbcTemplate().query(sql, userDao.getRowMapper(), email);
