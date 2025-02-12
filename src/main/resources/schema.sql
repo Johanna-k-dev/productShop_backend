@@ -18,13 +18,24 @@ CREATE TABLE IF NOT EXISTS product (
     quantity INT NOT NULL CHECK (quantity >= 0)
 );
 
-CREATE TABLE IF NOT EXISTS invoice (
+CREATE TABLE IF NOT EXISTS order (
     id               INT AUTO_INCREMENT PRIMARY KEY,
     date             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id          INT NOT NULL,
     product_id       INT NOT NULL,
-    order_status     VARCHAR(200) NOT NULL,
+    total            INT NOT NULL,
 
     FOREIGN KEY (user_id) REFERENCES user(id),
     FOREIGN KEY (product_id) REFERENCES product(id)
+);
+CREATE TABLE IF NOT EXISTS order_data (
+
+    id               INT AUTO_INCREMENT PRIMARY KEY,
+    order_id         INT NOT NULL,
+    user_id          INT NOT NULL,
+    product_id       INT NOT NULL,
+
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (product_id) REFERENCES product(id),
+    FOREIGN KEY (order_id) REFERENCES order(id)
 );
