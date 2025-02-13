@@ -70,7 +70,7 @@ public UserDao(JdbcTemplate jdbcTemplate){
 
     @Override
     public List<User> findAll() {
-        String sql = "SELECT * FROM product";
+        String sql = "SELECT * FROM user";
         return jdbcTemplate.query(sql, rowMapper);
     }
 

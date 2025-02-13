@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -23,6 +24,7 @@ public class OrderController {
     // Ajouter une nouvelle commande
     @PostMapping("/add")
     public ResponseEntity<String> addOrder(@RequestBody Order order) {
+        order.setDate(LocalDate.now());
         try {
             orderDao.addOrder(order);
             return ResponseEntity.status(HttpStatus.CREATED).body("Commande ajoutée avec succès !");

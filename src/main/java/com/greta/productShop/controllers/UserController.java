@@ -3,6 +3,7 @@ package com.greta.productShop.controllers;
 import com.greta.productShop.entity.User;
 import com.greta.productShop.daos.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,16 @@ public class UserController {
     @Autowired
     public UserController(UserDao userDao) {
         this.userDao = userDao;
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> getAllUsers() {
+        try {
+            List<User> users = userDao.findAll();
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     // Ajouter un utilisateur

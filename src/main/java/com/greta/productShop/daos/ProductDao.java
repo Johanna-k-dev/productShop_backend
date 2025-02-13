@@ -23,12 +23,12 @@ public class ProductDao implements CrudDao<Product> {
             rs.getDouble("price"),
             rs.getInt("quantity"),
             rs.getString("description"),
-            rs.getString("posterPath") // Mapping du posterPath
+            rs.getString("poster_path") // Mapping du posterPath
     );
 
     @Override
     public void save(Product product) {
-        String sql = "INSERT INTO product (name, price, quantity, description, posterPath) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO product (name, price, quantity, description, poster_path) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getQuantity(), product.getDescription(), product.getPosterPath());
     }
 
@@ -46,7 +46,7 @@ public class ProductDao implements CrudDao<Product> {
 
     @Override
     public void update(Product product) {
-        String sql = "UPDATE product SET name=?, price=?, quantity=?, description=?, posterPath=? WHERE id=?";
+        String sql = "UPDATE product SET name=?, price=?, quantity=?, description=?, poster_path=? WHERE id=?";
         jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getQuantity(), product.getDescription(), product.getPosterPath(), product.getId());
     }
 

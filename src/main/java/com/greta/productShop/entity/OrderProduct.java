@@ -4,6 +4,7 @@ public class OrderProduct {
 
     private int id;
     private int orderId;
+    private int userId;
     private int productId;
     private int quantity;
 
@@ -11,8 +12,9 @@ public class OrderProduct {
     public OrderProduct() {}
 
     // Constructeur avec paramètres
-    public OrderProduct(int orderId, int productId, int quantity) {
+    public OrderProduct(int orderId,int userId, int productId, int quantity) {
         this.orderId = orderId;
+        this.userId = userId;
         this.productId = productId;
         this.quantity = quantity;
     }
@@ -32,6 +34,14 @@ public class OrderProduct {
 
     public void setOrderId(int orderId) {
         this.orderId = orderId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public int getProductId() {
@@ -55,8 +65,11 @@ public class OrderProduct {
         return "OrderProduct{" +
                 "id=" + id +
                 ", orderId=" + orderId +
+                ",userId="+ userId +
                 ", productId=" + productId +
                 ", quantity=" + quantity +
                 '}';
     }
+
+
 }
