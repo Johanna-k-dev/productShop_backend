@@ -6,20 +6,22 @@ public class Product {
     private double price;
     private int quantity;
     private String description;
-    private String posterPath;
+    private String posterPath; // Correct name
 
+    // Constructeur vide
+    public Product() {}
 
-
-    public Product(){};
-
-    public  Product(int id, String name, double price,int quantity,String description,String posterPath){
-        this.id =id;
-        this.name =name;
-        this.price =price;
+    // Constructeur avec paramètres
+    public Product(int id, String name, double price, int quantity, String description, String posterPath) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
         this.quantity = quantity;
-        this.description= description;
-        this.posterPath=posterPath;
+        this.description = description;
+        this.posterPath = posterPath; // Correct name
     }
+
+    // Getters et Setters
     public int getId() {
         return id;
     }
@@ -64,7 +66,7 @@ public class Product {
         return posterPath;
     }
 
-    public void setPoster_path(String poster_path) {
-        this.posterPath = poster_path;
+    public void setPosterPath(String posterPath) { // Correct setter name
+        this.posterPath = posterPath;
     }
 }

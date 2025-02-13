@@ -12,10 +12,10 @@ import java.util.Optional;
 public class ProductDao implements CrudDao<Product> {
 
     private final JdbcTemplate jdbcTemplate;
+
     public ProductDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
 
     private final RowMapper<Product> rowMapper = (rs, rowNum) -> new Product(
             rs.getInt("id"),
@@ -23,15 +23,13 @@ public class ProductDao implements CrudDao<Product> {
             rs.getDouble("price"),
             rs.getInt("quantity"),
             rs.getString("description"),
-            rs.getString("posterPath")
+            rs.getString("posterPath") // Mapping du posterPath
     );
-
-
 
     @Override
     public void save(Product product) {
-        String sql = "INSERT INTO product (name, price, quantity) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getQuantity());
+        String sql = "INSERT INTO product (name, price, quantity, description, posterPath) VALUES (?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getQuantity(), product.getDescription(), product.getPosterPath());
     }
 
     @Override
@@ -48,8 +46,8 @@ public class ProductDao implements CrudDao<Product> {
 
     @Override
     public void update(Product product) {
-        String sql = "UPDATE product SET name=?, price=?, quantity=? WHERE id=?";
-        jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getQuantity(), product.getId());
+        String sql = "UPDATE product SET name=?, price=?, quantity=?, description=?, posterPath=? WHERE id=?";
+        jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getQuantity(), product.getDescription(), product.getPosterPath(), product.getId());
     }
 
     @Override
@@ -58,7 +56,7 @@ public class ProductDao implements CrudDao<Product> {
         jdbcTemplate.update(sql, id);
     }
 
-    // Méthode pour vérifier si le produit existe déjà par son nom (ou un autre attribut unique)
+    // Méthode pour vérifier si le produit existe déjà
     public boolean ifProductExists(String productName) {
         String sql = "SELECT COUNT(*) FROM product WHERE name = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, productName);
