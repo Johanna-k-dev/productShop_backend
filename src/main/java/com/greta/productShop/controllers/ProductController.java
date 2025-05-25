@@ -19,7 +19,7 @@ public class ProductController {
         this.productDao = productDao;
     }
 
-    // Ajouter un produit
+    // Add product
     @PostMapping("/add")
     public ResponseEntity<String> addProduct(@RequestBody Product product) {
         try {
@@ -30,14 +30,14 @@ public class ProductController {
         }
     }
 
-    // Récupérer tous les produits
+    // get all product
     @GetMapping("/all")
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = productDao.findAll();
         return products.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    // Récupérer un produit par son ID
+    // get product by id
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable int id) {
         Optional<Product> product = productDao.findById(id);
@@ -45,7 +45,23 @@ public class ProductController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // Mettre à jour un produit
+    // get product by collectionID
+    @GetMapping("/collection/{collectionId}")
+    public ResponseEntity<List<Product>> getProductsByCollection(@PathVariable int collectionId) {
+        List<Product> products = productDao.findByCollection(collectionId);
+        return products.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(products, HttpStatus.OK);
+    }
+    @GetMapping("/name/{name}")
+    public ResponseEntity<Product> getProductByName(@PathVariable String name) {
+        Optional<Product> product = productDao.findByName(name);
+        return product.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+
+    // update product
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateProduct(@PathVariable int id, @RequestBody Product product) {
         Optional<Product> existingProduct = productDao.findById(id);
@@ -57,7 +73,7 @@ public class ProductController {
         return new ResponseEntity<>("Produit mis à jour avec succès.", HttpStatus.OK);
     }
 
-    // Supprimer un produit par son ID
+    // delete product by id
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable int id) {
         Optional<Product> product = productDao.findById(id);

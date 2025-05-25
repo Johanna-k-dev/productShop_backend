@@ -1,8 +1,11 @@
 package com.greta.productShop.entity;
 
+import java.util.Collection;
+
 public class Product {
     private int id;
     private String name;
+    private int collection;
     private double price;
     private int quantity;
     private String description;
@@ -12,9 +15,10 @@ public class Product {
     public Product() {}
 
     // Constructeur avec paramètres
-    public Product(int id, String name, double price, int quantity, String description, String posterPath) {
+    public Product(int id, String name,int collection, double price, int quantity, String description, String posterPath) {
         this.id = id;
         this.name = name;
+        this.collection = collection;
         this.price = price;
         this.quantity = quantity;
         this.description = description;
@@ -32,6 +36,13 @@ public class Product {
 
     public String getName() {
         return name;
+    }
+
+    public int getCollection() {
+        return collection;
+    }
+    public void setCollection(int collection) {
+        this.collection = collection;
     }
 
     public void setName(String name) {

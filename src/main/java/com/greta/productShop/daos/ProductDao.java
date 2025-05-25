@@ -20,6 +20,7 @@ public class ProductDao implements CrudDao<Product> {
     private final RowMapper<Product> rowMapper = (rs, rowNum) -> new Product(
             rs.getInt("id"),
             rs.getString("name"),
+            rs.getInt("collection"),
             rs.getDouble("price"),
             rs.getInt("quantity"),
             rs.getString("description"),
@@ -28,7 +29,7 @@ public class ProductDao implements CrudDao<Product> {
 
     @Override
     public void save(Product product) {
-        String sql = "INSERT INTO product (name, price, quantity, description, poster_path) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO product (name,collection, price, quantity, description, poster_path) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getQuantity(), product.getDescription(), product.getPosterPath());
     }
 
@@ -36,6 +37,11 @@ public class ProductDao implements CrudDao<Product> {
     public Optional<Product> findById(int id) {
         String sql = "SELECT * FROM product WHERE id = ?";
         return jdbcTemplate.query(sql, rowMapper, id).stream().findFirst();
+    }
+
+    public Optional<Product> findByName(String name) {
+        String sql = "SELECT * FROM product WHERE name = ?";
+        return jdbcTemplate.query(sql, rowMapper, name).stream().findFirst();
     }
 
     @Override
@@ -56,7 +62,14 @@ public class ProductDao implements CrudDao<Product> {
         jdbcTemplate.update(sql, id);
     }
 
-    // Méthode pour vérifier si le produit existe déjà
+
+    public List<Product> findByCollection(int collectionId) {
+        String sql = "SELECT * FROM product WHERE collection = ?";
+        return jdbcTemplate.query(sql, rowMapper, collectionId);
+
+
+    }
+    // existing product Verified
     public boolean ifProductExists(String productName) {
         String sql = "SELECT COUNT(*) FROM product WHERE name = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, productName);

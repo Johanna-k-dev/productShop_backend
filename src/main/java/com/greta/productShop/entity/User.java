@@ -1,28 +1,15 @@
 package com.greta.productShop.entity;
 
-
-import org.springframework.data.annotation.Id;
-
 public class User {
 
-    @Id
     private int id;
-
     private String name;
-
-
     private String firstName;
-
     private String email;
     private String address;
-
-
     private int postalNumber;
-
-
     private String phoneNumber;
 
-    // 🔹 Constructeur vide
     public User() {}
 
     public User(int id, String name, String firstName, String email, String address, int postalNumber, String phoneNumber) {
@@ -35,7 +22,6 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    // 🔹 Getters et Setters simplifiés et corrigés
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
