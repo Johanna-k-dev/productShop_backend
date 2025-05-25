@@ -29,8 +29,9 @@ public class ProductDao implements CrudDao<Product> {
 
     @Override
     public void save(Product product) {
-        String sql = "INSERT INTO product (name,collection, price, quantity, description, poster_path) VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getQuantity(), product.getDescription(), product.getPosterPath());
+        String sql = "INSERT INTO product (name, collection, price, quantity, description, poster_path) VALUES (?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, product.getName(), product.getCollection(), product.getPrice(), product.getQuantity(), product.getDescription(), product.getPosterPath());
+
     }
 
     @Override
@@ -52,8 +53,8 @@ public class ProductDao implements CrudDao<Product> {
 
     @Override
     public void update(Product product) {
-        String sql = "UPDATE product SET name=?, price=?, quantity=?, description=?, poster_path=? WHERE id=?";
-        jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getQuantity(), product.getDescription(), product.getPosterPath(), product.getId());
+        String sql = "UPDATE product SET name=?,collection=?, price=?, quantity=?, description=?, poster_path=? WHERE id=?";
+        jdbcTemplate.update(sql, product.getName(), product.getCollection(), product.getPrice(), product.getQuantity(), product.getDescription(), product.getPosterPath(), product.getId());;
     }
 
     @Override
