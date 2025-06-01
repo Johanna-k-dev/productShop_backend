@@ -1,9 +1,11 @@
 package com.greta.productShop.daos;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.greta.productShop.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -23,23 +25,26 @@ public UserDao(JdbcTemplate jdbcTemplate){
             rs.getString("first_name"),
             rs.getString("email"),
             rs.getString("address"),
-            rs.getInt("postal_number"),
-            rs.getString("phone_number")
+            rs.getString("postal_number"),
+            rs.getString("phone_number"),
+            rs.getString("password"),
+            rs.getString("role")
     );
 
     @Override
-    public void save(User entity) {
-        // Insertion sans l'ID, car il est auto-incrémenté
-        String sql = "INSERT INTO user (email, name, first_name, address, phone_number, postal_number) VALUES (?, ?, ?, ?, ?, ?)";
-
+    public boolean save(User entity) {
+        String sql = "INSERT INTO user (email, name, first_name, address, phone_number, postal_number, password, role ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 entity.getEmail(),
                 entity.getName(),
                 entity.getFirstName(),
                 entity.getAddress(),
                 entity.getPhoneNumber(),
-                entity.getPostalNumber()
+                entity.getPostalNumber(),
+                entity.getPassword(),
+                entity.getRole()
         );
+        return false;
     }
 
 
@@ -54,13 +59,20 @@ public UserDao(JdbcTemplate jdbcTemplate){
         return Optional.of(users.get(0));
     }
 
+
+    public User findByEmail(String email) {
+        String sql = "SELECT * FROM user WHERE email = ?";
+        return jdbcTemplate.query(sql, rowMapper, email)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
+    }
+
     @Override
     public void update(User entity) {
         String sql = "UPDATE user SET email = ?, name = ?, first_name = ?, address = ?, phone_number = ?, postal_number = ? WHERE id = ?";
         jdbcTemplate.update(sql, entity.getEmail(), entity.getName(), entity.getFirstName(), entity.getAddress(), entity.getPhoneNumber(), entity.getPostalNumber(), entity.getId());
     }
-
-
 
     @Override
     public void deleteById(int id) {
@@ -74,8 +86,8 @@ public UserDao(JdbcTemplate jdbcTemplate){
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    // Méthode pour vérifier si l'utilisateur existe déjà par son email
-    public boolean ifUserExists(String email) {
+
+    public boolean existsByEmail(String email) {
         String sql = "SELECT COUNT(*) FROM user WHERE email = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
         return count != null && count > 0; // Si le count est supérieur à 0, l'utilisateur existe

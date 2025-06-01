@@ -7,12 +7,12 @@ public class User {
     private String firstName;
     private String email;
     private String address;
-    private int postalNumber;
+    private String postalNumber;
     private String phoneNumber;
+    private String password;
+    private String role;
 
-    public User() {}
-
-    public User(int id, String name, String firstName, String email, String address, int postalNumber, String phoneNumber) {
+    public User(int id, String name, String firstName, String email, String address, String postalNumber, String phoneNumber,String password, String role) {
         this.id = id;
         this.name = name;
         this.firstName = firstName;
@@ -20,7 +20,15 @@ public class User {
         this.address = address;
         this.postalNumber = postalNumber;
         this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.role = role;
     }
+    public User(String email, String password, String role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -37,9 +45,15 @@ public class User {
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
 
-    public int getPostalNumber() { return postalNumber; }
-    public void setPostalNumber(int postalNumber) { this.postalNumber = postalNumber; }
+    public String getPostalNumber() { return postalNumber; }
+    public void setPostalNumber(String postalNumber) { this.postalNumber = postalNumber; }
 
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }

@@ -35,7 +35,7 @@ public class UserController {
     @PostMapping("/add")
     public ResponseEntity<String> addUser(@RequestBody User user) {
         System.out.println("📌 Tentative d'ajout de l'utilisateur : " + user);
-        boolean exists = userDao.ifUserExists(user.getEmail());
+        boolean exists = userDao.existsByEmail(user.getEmail());
         System.out.println("🔍 Utilisateur existe déjà ? " + exists);
 
         if (exists) {
