@@ -2,10 +2,7 @@ package com.greta.productShop.controllers;
 
 import com.greta.productShop.services.StockService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/stock")
@@ -28,5 +25,12 @@ public class StockController {
         stockService.increaseStock(productId, quantity);
         return ResponseEntity.ok("Stock incrémenté");
     }
+
+    @GetMapping("/check")
+    public ResponseEntity<Boolean> isStockAvailable(@RequestParam int productId, @RequestParam int quantity) {
+        boolean available = stockService.isStockAvailable(productId, quantity);
+        return ResponseEntity.ok(available);
+    }
 }
+
 
