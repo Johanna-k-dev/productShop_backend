@@ -28,10 +28,11 @@ public class ProductDao implements CrudDao<Product> {
     );
 
     @Override
-    public void save(Product product) {
+    public boolean save(Product product) {
         String sql = "INSERT INTO product (name, collection, price, quantity, description, poster_path) VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, product.getName(), product.getCollection(), product.getPrice(), product.getQuantity(), product.getDescription(), product.getPosterPath());
 
+        return false;
     }
 
     @Override

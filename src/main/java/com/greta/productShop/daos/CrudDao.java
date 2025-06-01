@@ -1,17 +1,16 @@
 package com.greta.productShop.daos;
 
-import com.greta.productShop.entity.Product;
-
 import java.util.List;
 import java.util.Optional;
 
+// CrudDao sans findByEmail
 public interface CrudDao<T> {
-    void save(T entity);
+    boolean save(T entity);
     Optional<T> findById(int id);
-
-
-
-    List<T> findAll();
     void update(T entity);
     void deleteById(int id);
+    List<T> findAll();
 }
+
+
+
