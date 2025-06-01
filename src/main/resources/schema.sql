@@ -3,13 +3,15 @@ USE product_shop;
 
 
 CREATE TABLE IF NOT EXISTS user (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    first_name VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    address VARCHAR(200) NOT NULL,
-    postal_number VARCHAR(50) NOT NULL,
-    phone_number VARCHAR(20) NOT NULL
+     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        role VARCHAR(50) NOT NULL,
+        name VARCHAR(50) NOT NULL,
+        first_name VARCHAR(50) NOT NULL,
+        address VARCHAR(200) NOT NULL,
+        postal_number VARCHAR(50) NOT NULL,
+        phone_number VARCHAR(20) NOT NULL
 );
 
 
@@ -41,6 +43,15 @@ CREATE TABLE IF NOT EXISTS order_product (
     FOREIGN KEY (order_id) REFERENCES `order`(id),
     FOREIGN KEY (product_id) REFERENCES product(id)
 );
+
+CREATE TABLE IF NOT EXISTS invoice (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    date TIMESTAMP NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES `order`(id)
+);
+
 
 
 
