@@ -5,6 +5,7 @@ import com.greta.productShop.daos.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,26 +16,17 @@ import java.util.Optional;
 public class UserController {
 
     private final UserDao userDao;
+    private final PasswordEncoder passwordEncoder; // Ajout
 
     @Autowired
-    public UserController(UserDao userDao) {
+    public UserController(UserDao userDao, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
+        this.passwordEncoder = passwordEncoder; // Injection
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        try {
-            List<User> users = userDao.findAll();
-            return ResponseEntity.ok(users);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-
-    // Ajouter un utilisateur
     @PostMapping("/add")
     public ResponseEntity<String> addUser(@RequestBody User user) {
-        System.out.println("📌 Tentative d'ajout de l'utilisateur : " + user);
+        System.out.println(" Tentative d'ajout de l'utilisateur : " + user);
         boolean exists = userDao.existsByEmail(user.getEmail());
         System.out.println("🔍 Utilisateur existe déjà ? " + exists);
 
@@ -42,10 +34,31 @@ public class UserController {
             return ResponseEntity.badRequest().body("L'utilisateur avec cet email existe déjà.");
         }
 
-        // Sauvegarde
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("USER");
+        }
+
+        String hashedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashedPassword);
+
         userDao.save(user);
         System.out.println("✅ Utilisateur ajouté avec succès !");
         return ResponseEntity.ok("Utilisateur ajouté avec succès !");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody User loginRequest) {
+        Optional<User> userOpt = Optional.ofNullable(userDao.findByEmail(loginRequest.getEmail()));
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Utilisateur non trouvé.");
+        }
+
+        User user = userOpt.get();
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Mot de passe incorrect.");
+        }
+
+        return ResponseEntity.ok("Connexion réussie !");
     }
 
 

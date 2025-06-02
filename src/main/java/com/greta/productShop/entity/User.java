@@ -12,6 +12,8 @@ public class User {
     private String password;
     private String role;
 
+    public User() {}
+
     public User(int id, String name, String firstName, String email, String address, String postalNumber, String phoneNumber,String password, String role) {
         this.id = id;
         this.name = name;
@@ -28,6 +30,7 @@ public class User {
         this.password = password;
         this.role = role;
     }
+
 
 
     public int getId() { return id; }
