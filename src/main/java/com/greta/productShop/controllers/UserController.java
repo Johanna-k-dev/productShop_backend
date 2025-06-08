@@ -2,6 +2,7 @@ package com.greta.productShop.controllers;
 
 import com.greta.productShop.entity.User;
 import com.greta.productShop.daos.UserDao;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +61,11 @@ public class UserController {
 
         return ResponseEntity.ok("Connexion réussie !");
     }
-
+    @PostMapping("/user/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        // Optionnel : invalidation côté serveur si tu stockes le token
+        return ResponseEntity.ok("Déconnecté");
+    }
 
     // Utilisateur par ID
     @GetMapping("/{id}")
