@@ -1,15 +1,22 @@
 package com.greta.productShop.controllers;
 
+import com.greta.productShop.dto.UserDto;
 import com.greta.productShop.entity.User;
 import com.greta.productShop.daos.UserDao;
+import com.greta.productShop.services.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -18,11 +25,13 @@ public class UserController {
 
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder; // Ajout
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public UserController(UserDao userDao, PasswordEncoder passwordEncoder) {
+    public UserController(UserDao userDao, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder; // Injection
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/add")
@@ -38,36 +47,40 @@ public class UserController {
         if (user.getRole() == null || user.getRole().isEmpty()) {
             user.setRole("USER");
         }
-
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
 
         userDao.save(user);
-        System.out.println("✅ Utilisateur ajouté avec succès !");
+        System.out.println("Utilisateur ajouté avec succès !");
         return ResponseEntity.ok("Utilisateur ajouté avec succès !");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User loginRequest) {
-        Optional<User> userOpt = Optional.ofNullable(userDao.findByEmail(loginRequest.getEmail()));
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Utilisateur non trouvé.");
+    public ResponseEntity<?> login(@RequestBody User loginData) {
+        User user = userDao.findByEmail(loginData.getEmail());
+
+        if (user == null || !passwordEncoder.matches(loginData.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou mot de passe invalide");
         }
 
-        User user = userOpt.get();
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Mot de passe incorrect.");
-        }
+        String token = jwtUtil.generateToken(user.getEmail());
 
-        return ResponseEntity.ok("Connexion réussie !");
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("user", Map.of(
+                "name", user.getFirstName(),
+                "email", user.getEmail()
+        ));
+        return ResponseEntity.ok(response);
     }
+
     @PostMapping("/user/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         // Optionnel : invalidation côté serveur si tu stockes le token
         return ResponseEntity.ok("Déconnecté");
     }
 
-    // Utilisateur par ID
+    // User by ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
         Optional<User> user = userDao.findById(id);
@@ -79,7 +92,7 @@ public class UserController {
         }
     }
 
-    // Utilisateur par email
+    // User by email
     @GetMapping("/email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable("email") String email) {
         System.out.println("Email reçu : " + email);  // Log pour debug
@@ -93,8 +106,24 @@ public class UserController {
             return ResponseEntity.ok(users.get(0));
         }
     }
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal UserDetails authenticatedUser) {
+        String email = authenticatedUser.getUsername();
+        User user = userDao.findByEmail(email);
+        UserDto dto = new UserDto(
+                user.getId(),
+                user.getEmail(),
+                user.getName(),
+                user.getFirstName(),
+                user.getAddress(),
+                user.getPhoneNumber(),
+                user.getPostalNumber(),
+                user.getRole()
+        );
 
-    // Met à jour un utilisateur
+        return ResponseEntity.ok(dto);
+    }
+    // Update user
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateUser(@PathVariable int id, @RequestBody User user) {
         Optional<User> existingUserOpt = userDao.findById(id);
@@ -114,7 +143,7 @@ public class UserController {
         return ResponseEntity.ok("Utilisateur mis à jour !");
     }
 
-    // Supprimer un utilisateur par ID
+    // Delete user by ID
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
         Optional<User> user = userDao.findById(id);
