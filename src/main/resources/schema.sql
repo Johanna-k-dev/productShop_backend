@@ -1,3 +1,5 @@
+
+
 CREATE DATABASE IF NOT EXISTS product_shop;
 USE product_shop;
 
@@ -51,8 +53,6 @@ CREATE TABLE IF NOT EXISTS invoice (
     date TIMESTAMP NOT NULL,
     FOREIGN KEY (order_id) REFERENCES `order`(id)
 );
-
-
 
 
 
