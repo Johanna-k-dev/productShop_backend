@@ -68,8 +68,6 @@ public class ProductDao implements CrudDao<Product> {
     public List<Product> findByCollection(int collectionId) {
         String sql = "SELECT * FROM product WHERE collection = ?";
         return jdbcTemplate.query(sql, rowMapper, collectionId);
-
-
     }
     // existing product Verified
     public boolean ifProductExists(String productName) {

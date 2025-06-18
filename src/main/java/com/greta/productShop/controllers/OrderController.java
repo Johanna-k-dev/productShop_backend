@@ -21,7 +21,7 @@ public class OrderController {
         this.orderDao = orderDao;
     }
 
-    // Ajouter une nouvelle commande
+    // Add new order
     @PostMapping("/add")
     public ResponseEntity<String> addOrder(@RequestBody Order order) {
         order.setDate(LocalDate.now());
