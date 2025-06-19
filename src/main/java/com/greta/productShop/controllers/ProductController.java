@@ -23,7 +23,7 @@ public class ProductController {
     @PostMapping("/add")
     public ResponseEntity<String> addProduct(@RequestBody Product product) {
         try {
-            productDao.save(product);  // Si un doublon est inséré, une exception sera levée
+            productDao.save(product);
             return new ResponseEntity<>("Produit ajouté avec succès.", HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>("Erreur lors de l'ajout du produit. Vérifiez si le produit existe déjà.", HttpStatus.BAD_REQUEST);
@@ -64,13 +64,18 @@ public class ProductController {
     // update product
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateProduct(@PathVariable int id, @RequestBody Product product) {
-        Optional<Product> existingProduct = productDao.findById(id);
-        if (existingProduct.isEmpty()) {
-            return new ResponseEntity<>("Produit non trouvé.", HttpStatus.NOT_FOUND);
+        try {
+            Optional<Product> existingProduct = productDao.findById(id);
+            if (existingProduct.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produit non trouvé.");
+            }
+
+            product.setId(id);
+            productDao.update(product);
+            return ResponseEntity.ok("Produit mis à jour avec succès.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
         }
-        product.setId(id);  // Met à jour l'ID du produit
-        productDao.update(product);
-        return new ResponseEntity<>("Produit mis à jour avec succès.", HttpStatus.OK);
     }
 
     // delete product by id

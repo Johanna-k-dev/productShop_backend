@@ -36,23 +36,24 @@ public class UserController {
 
     @PostMapping("/add")
     public ResponseEntity<String> addUser(@RequestBody User user) {
-        System.out.println(" Tentative d'ajout de l'utilisateur : " + user);
-        boolean exists = userDao.existsByEmail(user.getEmail());
-        System.out.println("🔍 Utilisateur existe déjà ? " + exists);
+        try {
+            boolean exists = userDao.existsByEmail(user.getEmail());
+            if (exists) {
+                return ResponseEntity.badRequest().body("L'utilisateur avec cet email existe déjà.");
+            }
 
-        if (exists) {
-            return ResponseEntity.badRequest().body("L'utilisateur avec cet email existe déjà.");
+            if (user.getRole() == null || user.getRole().isEmpty()) {
+                user.setRole("USER");
+            }
+
+            String hashedPassword = passwordEncoder.encode(user.getPassword());
+            user.setPassword(hashedPassword);
+            userDao.save(user);
+
+            return ResponseEntity.ok("Utilisateur ajouté avec succès !");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'ajout : " + e.getMessage());
         }
-
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("USER");
-        }
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashedPassword);
-
-        userDao.save(user);
-        System.out.println("Utilisateur ajouté avec succès !");
-        return ResponseEntity.ok("Utilisateur ajouté avec succès !");
     }
 
     @PostMapping("/login")
@@ -126,32 +127,40 @@ public class UserController {
     // Update user
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateUser(@PathVariable int id, @RequestBody User user) {
-        Optional<User> existingUserOpt = userDao.findById(id);
-        if (existingUserOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        User existingUser = existingUserOpt.get();
-        // Mets à jour les informations de l'utilisateur
-        existingUser.setName(user.getName());
-        existingUser.setFirstName(user.getFirstName());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setAddress(user.getAddress());
-        existingUser.setPostalNumber(user.getPostalNumber());
-        existingUser.setPhoneNumber(user.getPhoneNumber());
+        try {
+            Optional<User> existingUserOpt = userDao.findById(id);
+            if (existingUserOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
 
-        userDao.update(existingUser);
-        return ResponseEntity.ok("Utilisateur mis à jour !");
+            User existingUser = existingUserOpt.get();
+            existingUser.setName(user.getName());
+            existingUser.setFirstName(user.getFirstName());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setAddress(user.getAddress());
+            existingUser.setPostalNumber(user.getPostalNumber());
+            existingUser.setPhoneNumber(user.getPhoneNumber());
+
+            userDao.update(existingUser);
+            return ResponseEntity.ok("Utilisateur mis à jour !");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+        }
     }
 
     // Delete user by ID
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
-        Optional<User> user = userDao.findById(id);
-        if (user.isPresent()) {
-            userDao.deleteById(id);
-            return ResponseEntity.ok("Utilisateur supprimé avec succès !");
-        } else {
-            return ResponseEntity.notFound().build();
+        try {
+            Optional<User> user = userDao.findById(id);
+            if (user.isPresent()) {
+                userDao.deleteById(id);
+                return ResponseEntity.ok("Utilisateur supprimé avec succès !");
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la suppression : " + e.getMessage());
         }
     }
 }

@@ -22,33 +22,41 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
-        boolean alreadyExists = userDao.existsByEmail(user.getEmail());
-        if (alreadyExists) {
-            return ResponseEntity.badRequest().body("Error: Email is already in use!");
+        try {
+            boolean alreadyExists = userDao.existsByEmail(user.getEmail());
+            if (alreadyExists) {
+                return ResponseEntity.badRequest().body("Error: Email is already in use!");
+            }
+
+            User newUser = new User(
+                    user.getEmail(),
+                    passwordEncoder.encode(user.getPassword()),
+                    "USER"
+            );
+
+            boolean isUserSaved = userDao.save(newUser);
+            return isUserSaved ?
+                    ResponseEntity.ok("User registered successfully!") :
+                    ResponseEntity.badRequest().body("Error: User registration failed!");
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Unexpected error during registration: " + e.getMessage());
         }
-
-        User newUser = new User(
-                user.getEmail(),
-                passwordEncoder.encode(user.getPassword()),
-                "USER"
-        );
-
-        boolean isUserSaved = userDao.save(newUser);
-        return isUserSaved ?
-                ResponseEntity.ok("User registered successfully!") :
-                ResponseEntity.badRequest().body("Error: User registration failed!");
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> authenticateUser(@RequestBody User user) {
+        try {
+            User existingUser = userDao.findByEmail(user.getEmail());
+            if (existingUser == null || !passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
+                return ResponseEntity.badRequest().body("Error: Invalid email or password!");
+            }
 
-        User existingUser = userDao.findByEmail(user.getEmail());
-        if (existingUser == null || !passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
-            return ResponseEntity.badRequest().body("Error: Invalid email or password!");
+            String token = jwtUtils.generateToken(existingUser.getEmail());
+            return ResponseEntity.ok(token);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Unexpected error during login: " + e.getMessage());
         }
-
-        String token = jwtUtils.generateToken(existingUser.getEmail());
-        return ResponseEntity.ok(token);
     }
 }
-
