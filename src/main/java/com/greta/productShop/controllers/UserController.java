@@ -56,31 +56,6 @@ public class UserController {
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User loginData) {
-        User user = userDao.findByEmail(loginData.getEmail());
-
-        if (user == null || !passwordEncoder.matches(loginData.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou mot de passe invalide");
-        }
-
-        String token = jwtUtil.generateToken(user.getEmail());
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", token);
-        response.put("user", Map.of(
-                "name", user.getFirstName(),
-                "email", user.getEmail()
-        ));
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/user/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request) {
-        // Optionnel : invalidation côté serveur si tu stockes le token
-        return ResponseEntity.ok("Déconnecté");
-    }
-
     // User by ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {

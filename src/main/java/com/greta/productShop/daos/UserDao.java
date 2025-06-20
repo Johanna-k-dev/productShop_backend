@@ -1,5 +1,6 @@
 package com.greta.productShop.daos;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.greta.productShop.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,7 +69,15 @@ public UserDao(JdbcTemplate jdbcTemplate){
                 .findFirst()
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
     }
+    public  int getUserIdFromAuth(Authentication authentication) {
+        if(authentication == null){
+            throw new RuntimeException("Une erreur est survenue lors de l'authentification");
+        }
+        String email = authentication.getName();
+        User user = findByEmail(email);
+        return user.getId();
 
+    }
     @Override
     public void update(User entity) {
         String sql = "UPDATE user SET email = ?, name = ?, first_name = ?, address = ?, phone_number = ?, postal_number = ? WHERE id = ?";
