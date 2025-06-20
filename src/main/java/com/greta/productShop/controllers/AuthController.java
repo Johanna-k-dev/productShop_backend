@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -45,7 +48,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> authenticateUser(@RequestBody User user) {
+    public ResponseEntity<?> authenticateUser(@RequestBody User user) {
         try {
             User existingUser = userDao.findByEmail(user.getEmail());
             if (existingUser == null || !passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
@@ -53,7 +56,13 @@ public class AuthController {
             }
 
             String token = jwtUtils.generateToken(existingUser.getEmail());
-            return ResponseEntity.ok(token);
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("user", Map.of(
+                    "name", existingUser.getFirstName(),
+                    "email", existingUser.getEmail()
+            ));
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Unexpected error during login: " + e.getMessage());
