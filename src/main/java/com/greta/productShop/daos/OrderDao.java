@@ -3,8 +3,13 @@ package com.greta.productShop.daos;
 import com.greta.productShop.entity.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -19,9 +24,19 @@ public class OrderDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void addOrder(Order order) {
-        String sql = "INSERT INTO `order` (date, total) VALUES (?, ?)";
-        jdbcTemplate.update(sql, order.getDate(), order.getTotal());
+    public int addOrder(Order order) {
+        String sql = "INSERT INTO `order` (date, total, user_id) VALUES (?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setDate(1, Date.valueOf(order.getDate()));
+            ps.setDouble(2, order.getTotal());
+            ps.setInt(3,order.getUserId());
+            return ps;
+        }, keyHolder);
+        System.out.println("Ajout de commande pour userId = " + order.getUserId());
+        return keyHolder.getKey().intValue(); // retourne l’ID généré
     }
 
     public List<Order> getAllOrders() {
