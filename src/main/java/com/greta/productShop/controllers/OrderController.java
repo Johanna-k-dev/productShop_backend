@@ -1,10 +1,13 @@
 package com.greta.productShop.controllers;
 
 import com.greta.productShop.daos.OrderDao;
+import com.greta.productShop.daos.UserDao;
 import com.greta.productShop.entity.Order;
+import com.greta.productShop.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -15,16 +18,20 @@ import java.util.List;
 public class OrderController {
 
     private final OrderDao orderDao;
+    private  final UserDao userDao;
 
     @Autowired
-    public OrderController(OrderDao orderDao) {
+    public OrderController(OrderDao orderDao, UserDao userDao) {
         this.orderDao = orderDao;
+        this.userDao = userDao;
     }
 
     // Add new order
     @PostMapping("/add")
-    public ResponseEntity<String> addOrder(@RequestBody Order order) {
+    public ResponseEntity<String> addOrder(@RequestBody Order order, Authentication authentication) {
+        int userId = userDao.getUserIdFromAuth(authentication);
         order.setDate(LocalDate.now());
+        order.setUserId(userId);
         try {
             orderDao.addOrder(order);
             return ResponseEntity.status(HttpStatus.CREATED).body("Commande ajoutée avec succès !");
