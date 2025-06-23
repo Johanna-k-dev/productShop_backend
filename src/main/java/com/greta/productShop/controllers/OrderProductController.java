@@ -13,7 +13,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/order-products")
@@ -52,40 +54,44 @@ public class OrderProductController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addOrderWithProducts(@RequestBody OrderWithProductsDto orderDto, Authentication authentication) {
-        try {
+    public ResponseEntity<Map<String, Object>> addOrderWithProducts(
+            @RequestBody OrderWithProductsDto orderDto,
+            Authentication authentication) {
 
+        try {
             for (OrderProduct item : orderDto.getItems()) {
                 if (!orderProductDao.productExists((int) item.getProductId())) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body("Erreur : Le produit avec l’ID " + item.getProductId() + " n’existe pas.");
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("error", "Le produit avec l’ID " + item.getProductId() + " n’existe pas.");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
                 }
             }
 
-            // 2. Création de la commande
             Order order = new Order();
-           int userId= userDao.getUserIdFromAuth(authentication);
+            int userId = userDao.getUserIdFromAuth(authentication);
             order.setUserId(userId);
             order.setDate(LocalDate.now());
             order.setTotal(orderDto.getTotal());
 
-            int orderId = Math.toIntExact(orderDao.addOrder(order)); // Méthode personnalisée qui retourne l’ID généré
+            int orderId = Math.toIntExact(orderDao.addOrder(order));
 
-            // 3. Insertion des produits liés à cette commande
             for (OrderProduct item : orderDto.getItems()) {
-                item.setOrderId(orderId); // on attache la commande générée
-                orderProductDao.addOrderProduct(item); // insertion dans order_product
+                item.setOrderId(orderId);
+                orderProductDao.addOrderProduct(item);
             }
 
-            return ResponseEntity.status(HttpStatus.CREATED).body("Commande et produits enregistrés !");
+            Map<String, Object> response = new HashMap<>();
+            response.put("orderId", orderId);
+            response.put("message", "Commande enregistrée avec succès");
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors de l’enregistrement : " + e.getMessage());
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Erreur lors de l’enregistrement : " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
-
-
-
 
     @PutMapping("/update/{orderId}/{productId}")
     public ResponseEntity<String> updateOrderProduct(
@@ -108,11 +114,12 @@ public class OrderProductController {
             @PathVariable int orderId,
             @PathVariable int productId) {
         try {
-            orderProductDao.deleteOrderProduct((int) orderId, (int) productId);
+            orderProductDao.deleteOrderProduct(orderId, productId);
             return ResponseEntity.ok("Produit supprimé de la commande avec succès !");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erreur : " + e.getMessage());
         }
     }
+
 }

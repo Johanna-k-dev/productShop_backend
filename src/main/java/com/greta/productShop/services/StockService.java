@@ -17,7 +17,7 @@ public class StockService {
         this.productDao = productDao;
     }
 
-    // Check if enough stock is available for a product
+
     public boolean isStockAvailable(int productId, int quantity) {
         Optional<Product> productOpt = productDao.findById(productId);
         return productOpt.isPresent() && productOpt.get().getQuantity() >= quantity;
@@ -37,7 +37,7 @@ public class StockService {
         return false;
     }
 
-    // Increase stock when restocking
+
     public void increaseStock(int productId, int quantity) {
         Optional<Product> productOpt = productDao.findById(productId);
         if (productOpt.isPresent()) {

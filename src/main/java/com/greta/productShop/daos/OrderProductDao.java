@@ -61,4 +61,6 @@ public class OrderProductDao {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, productId);
         return count != null && count > 0;
     }
+
+
 }

@@ -11,7 +11,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/orders")
@@ -26,7 +28,7 @@ public class OrderController {
         this.userDao = userDao;
     }
 
-    // Add new order
+
     @PostMapping("/add")
     public ResponseEntity<String> addOrder(@RequestBody Order order, Authentication authentication) {
         int userId = userDao.getUserIdFromAuth(authentication);
@@ -34,13 +36,15 @@ public class OrderController {
         order.setUserId(userId);
         try {
             orderDao.addOrder(order);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Commande ajoutée avec succès !");
+            int orderId = orderDao.addOrder(order);
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", orderId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response.toString());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'ajout de la commande : " + e.getMessage());
         }
     }
 
-    // Récupérer toutes les commandes
     @GetMapping("/all")
     public ResponseEntity<List<Order>> getAllOrders() {
         try {
@@ -51,7 +55,6 @@ public class OrderController {
         }
     }
 
-    // Récupérer une commande par son ID
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable int id) {
         try {
@@ -66,7 +69,7 @@ public class OrderController {
         }
     }
 
-    // Mettre à jour une commande
+
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateOrder(@PathVariable int id, @RequestBody Order order) {
         try {
@@ -78,7 +81,6 @@ public class OrderController {
         }
     }
 
-    // Supprimer une commande par son ID
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable int id) {
         try {
