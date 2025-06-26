@@ -20,16 +20,16 @@ public class ProductDao implements CrudDao<Product> {
     private final RowMapper<Product> rowMapper = (rs, rowNum) -> new Product(
             rs.getInt("id"),
             rs.getString("name"),
-            rs.getInt("collection"),
+            rs.getInt("collection_id"),
             rs.getDouble("price"),
             rs.getInt("quantity"),
             rs.getString("description"),
-            rs.getString("poster_path") // Mapping du posterPath
+            rs.getString("poster_path")
     );
 
     @Override
     public boolean save(Product product) {
-        String sql = "INSERT INTO product (name, collection, price, quantity, description, poster_path) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO product (name, collection_id, price, quantity, description, poster_path) VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, product.getName(), product.getCollection(), product.getPrice(), product.getQuantity(), product.getDescription(), product.getPosterPath());
 
         return false;
@@ -54,7 +54,7 @@ public class ProductDao implements CrudDao<Product> {
 
     @Override
     public void update(Product product) {
-        String sql = "UPDATE product SET name=?,collection=?, price=?, quantity=?, description=?, poster_path=? WHERE id=?";
+        String sql = "UPDATE product SET name=?,collection_id=?, price=?, quantity=?, description=?, poster_path=? WHERE id=?";
         jdbcTemplate.update(sql, product.getName(), product.getCollection(), product.getPrice(), product.getQuantity(), product.getDescription(), product.getPosterPath(), product.getId());;
     }
 
@@ -64,15 +64,15 @@ public class ProductDao implements CrudDao<Product> {
         jdbcTemplate.update(sql, id);
     }
 
-
     public List<Product> findByCollection(int collectionId) {
-        String sql = "SELECT * FROM product WHERE collection = ?";
+        String sql = "SELECT * FROM product WHERE collection_id = ?";
         return jdbcTemplate.query(sql, rowMapper, collectionId);
     }
-    // existing product Verified
+
+
     public boolean ifProductExists(String productName) {
         String sql = "SELECT COUNT(*) FROM product WHERE name = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, productName);
-        return count != null && count > 0; // Si le count est supérieur à 0, le produit existe
+        return count != null && count > 0;
     }
 }

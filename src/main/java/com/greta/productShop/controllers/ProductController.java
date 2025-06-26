@@ -19,7 +19,7 @@ public class ProductController {
         this.productDao = productDao;
     }
 
-    // Add product
+
     @PostMapping("/add")
     public ResponseEntity<String> addProduct(@RequestBody Product product) {
         try {
@@ -30,14 +30,14 @@ public class ProductController {
         }
     }
 
-    // get all product
+
     @GetMapping("/all")
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = productDao.findAll();
         return products.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    // get product by id
+
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable int id) {
         Optional<Product> product = productDao.findById(id);
@@ -45,7 +45,7 @@ public class ProductController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // get product by collectionID
+
     @GetMapping("/collection/{collectionId}")
     public ResponseEntity<List<Product>> getProductsByCollection(@PathVariable int collectionId) {
         List<Product> products = productDao.findByCollection(collectionId);
@@ -53,6 +53,7 @@ public class ProductController {
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(products, HttpStatus.OK);
     }
+
     @GetMapping("/name/{name}")
     public ResponseEntity<Product> getProductByName(@PathVariable String name) {
         Optional<Product> product = productDao.findByName(name);
@@ -61,7 +62,6 @@ public class ProductController {
     }
 
 
-    // update product
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateProduct(@PathVariable int id, @RequestBody Product product) {
         try {
@@ -78,7 +78,7 @@ public class ProductController {
         }
     }
 
-    // delete product by id
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable int id) {
         Optional<Product> product = productDao.findById(id);

@@ -20,7 +20,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/order-products")
 public class OrderProductController {
-
     private final OrderDao orderDao;
     private final OrderProductDao orderProductDao;
     private  final UserDao userDao;
@@ -42,7 +41,7 @@ public class OrderProductController {
         }
     }
 
-    @GetMapping("/{orderId}/{productId}")
+    @GetMapping("order-products")
     public ResponseEntity<OrderProduct> getOrderProductById(
             @PathVariable int orderId,
             @PathVariable int productId) {
@@ -57,7 +56,6 @@ public class OrderProductController {
     public ResponseEntity<Map<String, Object>> addOrderWithProducts(
             @RequestBody OrderWithProductsDto orderDto,
             Authentication authentication) {
-
         try {
             for (OrderProduct item : orderDto.getItems()) {
                 if (!orderProductDao.productExists((int) item.getProductId())) {
@@ -66,7 +64,6 @@ public class OrderProductController {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
                 }
             }
-
             Order order = new Order();
             int userId = userDao.getUserIdFromAuth(authentication);
             order.setUserId(userId);
@@ -121,5 +118,4 @@ public class OrderProductController {
                     .body("Erreur : " + e.getMessage());
         }
     }
-
 }

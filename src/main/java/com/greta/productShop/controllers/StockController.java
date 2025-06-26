@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 public class StockController {
 
     private final StockService stockService;
-
     public StockController(StockService stockService) {
         this.stockService = stockService;
     }

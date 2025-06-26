@@ -1,8 +1,5 @@
-
-
 CREATE DATABASE IF NOT EXISTS product_shop;
 USE product_shop;
-
 
 CREATE TABLE IF NOT EXISTS user (
      id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
@@ -19,7 +16,7 @@ CREATE TABLE IF NOT EXISTS user (
 CREATE TABLE IF NOT EXISTS product (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
-    collection INT NOT NULL,
+    collection_id INT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     quantity INT NOT NULL,
     description TEXT,

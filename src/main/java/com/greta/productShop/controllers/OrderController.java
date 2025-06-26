@@ -3,7 +3,6 @@ package com.greta.productShop.controllers;
 import com.greta.productShop.daos.OrderDao;
 import com.greta.productShop.daos.UserDao;
 import com.greta.productShop.entity.Order;
-import com.greta.productShop.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +72,7 @@ public class OrderController {
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateOrder(@PathVariable int id, @RequestBody Order order) {
         try {
-            order.setId(id); // Assurez-vous que l'ID est bien celui de la commande à mettre à jour
+            order.setId(id);
             orderDao.updateOrder(order);
             return ResponseEntity.ok("Commande mise à jour avec succès !");
         } catch (Exception e) {

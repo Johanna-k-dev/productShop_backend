@@ -54,11 +54,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Webflux (optionnel selon ton usage) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
 
         <!-- Spring Security -->
         <dependency>

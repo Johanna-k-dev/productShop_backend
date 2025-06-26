@@ -27,34 +27,57 @@ import java.util.List;
 @EnableWebSecurity
     public class SecurityConfig {
     private final Filter jwtFilter;
-    private UserDetailsService userDetailsService;
 
     public SecurityConfig(JwtFilter jwtFilter, CustomUserDetailsService userDetailsService) {
         this.jwtFilter = jwtFilter;
-        this.userDetailsService = userDetailsService;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("/auth/**", "/test/all").permitAll()
-                                .requestMatchers("/user/add", "/user/login").permitAll()  // Ajout ici
-                                .requestMatchers("/user/**").hasRole("USER")
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/product/**").permitAll()
-                                .anyRequest().authenticated()
-                );
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(Customizer.withDefaults())
+            .sessionManagement(sessionManagement ->
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(authorizeRequests ->
+                authorizeRequests
+                        .requestMatchers("/auth/register").permitAll()
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/user/add").permitAll()
+                        .requestMatchers("/product/all").permitAll()
+                        .requestMatchers("/product/name/{name}").permitAll()
+                        .requestMatchers("/product/collection/{collectionId}").permitAll()
+                        .requestMatchers("/user/{id}").hasRole("USER")
+                        .requestMatchers("/user/me").hasRole("USER")
+                        .requestMatchers("/user/email/{email}").hasRole("USER")
+                        .requestMatchers("/stock/decrease").hasRole("USER")
+                        .requestMatchers("/stock/increase").hasRole("USER")
+                        .requestMatchers("/user/update/{id}").hasRole("USER")
+                        .requestMatchers("/orders/add").hasRole("USER")
+                        .requestMatchers("/orders/{id}").hasRole("USER")
+                        .requestMatchers("/orders/update/{id}").hasRole("USER")
+                        .requestMatchers("/orders/delete/{id}").hasRole("USER")
+                        .requestMatchers("/order-products/add").hasRole("USER")
+                        .requestMatchers("/order-products/update/{orderId}/{productId}").hasRole("USER")
+                        .requestMatchers("/order-products/delete/{orderId}/{productId}").hasRole("USER")
+                        .requestMatchers("/order-products/{id}").hasRole("USER")
+                        .requestMatchers("/order-products/{id}").hasRole("USER")
+                        .requestMatchers("/invoice/generate").hasRole("USER")
+                        .requestMatchers("/invoice/get/{orderId}").hasRole("USER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/user/all").hasRole("ADMIN")
+                        .requestMatchers("/orders/all").hasRole("ADMIN")
+                        .requestMatchers("/order-products/all").hasRole("ADMIN")
+                        .requestMatchers("/product/add").hasRole("ADMIN")
+                        .requestMatchers("/product/update/{id}").hasRole("ADMIN")
+                        .requestMatchers("/product/delete").hasRole("ADMIN")
+                        .requestMatchers("/stock/check").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+            );
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider(CustomUserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
@@ -66,7 +89,7 @@ import java.util.List;
 
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration
+        AuthenticationConfiguration authenticationConfiguration
     ) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }

@@ -22,8 +22,8 @@ public class InvoiceController {
         try {
             boolean success = invoiceService.generateInvoice(orderId);
             return success
-                    ? ResponseEntity.ok("Invoice generated successfully")
-                    : ResponseEntity.badRequest().body("Order not found or invoice already exists");
+                ? ResponseEntity.ok("Invoice generated successfully")
+                : ResponseEntity.badRequest().body("Order not found or invoice already exists");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error while generating invoice: " + e.getMessage());
         }

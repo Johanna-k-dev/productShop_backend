@@ -3,7 +3,6 @@ package com.greta.productShop.controllers;
 import com.greta.productShop.daos.UserDao;
 import com.greta.productShop.entity.User;
 import com.greta.productShop.services.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -55,24 +54,17 @@ public class AuthController {
             if (existingUser == null || !passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
                 return ResponseEntity.badRequest().body("Error: Invalid email or password!");
             }
-
             String token = jwtUtils.generateToken(existingUser.getEmail());
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("user", Map.of(
-                    "name", existingUser.getFirstName(),
-                    "email", existingUser.getEmail()
+                "name", existingUser.getFirstName(),
+                "email", existingUser.getEmail()
             ));
             return ResponseEntity.ok(response);
-
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Unexpected error during login: " + e.getMessage());
         }
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request) {
-        // Optionnel : invalidation côté serveur si tu stockes le token
-        return ResponseEntity.ok("Déconnecté");
-    }
 }

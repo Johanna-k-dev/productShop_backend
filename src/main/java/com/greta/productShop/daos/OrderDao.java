@@ -18,7 +18,6 @@ import java.util.Optional;
 public class OrderDao {
 
     private final JdbcTemplate jdbcTemplate;
-
     @Autowired
     public OrderDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -35,7 +34,6 @@ public class OrderDao {
             ps.setInt(3,order.getUserId());
             return ps;
         }, keyHolder);
-        System.out.println("Ajout de commande pour userId = " + order.getUserId());
         return keyHolder.getKey().intValue(); // retourne l’ID généré
     }
 

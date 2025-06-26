@@ -4,17 +4,15 @@ import com.greta.productShop.dto.UserDto;
 import com.greta.productShop.entity.User;
 import com.greta.productShop.daos.UserDao;
 import com.greta.productShop.services.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,7 +54,6 @@ public class UserController {
         }
     }
 
-    // User by ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
         Optional<User> user = userDao.findById(id);
@@ -68,7 +65,6 @@ public class UserController {
         }
     }
 
-    // User by email
     @GetMapping("/email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable("email") String email) {
         System.out.println("Email reçu : " + email);  // Log pour debug
@@ -82,6 +78,7 @@ public class UserController {
             return ResponseEntity.ok(users.get(0));
         }
     }
+
     @GetMapping("/me")
     public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal UserDetails authenticatedUser) {
         String email = authenticatedUser.getUsername();
@@ -99,7 +96,7 @@ public class UserController {
 
         return ResponseEntity.ok(dto);
     }
-    // Update user
+
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateUser(@PathVariable int id, @RequestBody User user) {
         try {
@@ -123,7 +120,6 @@ public class UserController {
         }
     }
 
-    // Delete user by ID
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
         try {
@@ -137,5 +133,9 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la suppression : " + e.getMessage());
         }
+    }
+
+    public JwtUtil getJwtUtil() {
+        return jwtUtil;
     }
 }

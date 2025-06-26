@@ -23,8 +23,6 @@ public class DataSourceConfig {
     @Value("${spring.datasource.driver-class-name}")
     private String driverClassName;
 
-
-
     @Bean
     public DataSource dataSource() {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();

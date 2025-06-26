@@ -25,13 +25,12 @@ public class User {
         this.password = password;
         this.role = role;
     }
+
     public User(String email, String password, String role) {
         this.email = email;
         this.password = password;
         this.role = role;
     }
-
-
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }

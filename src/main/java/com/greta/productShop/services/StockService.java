@@ -17,13 +17,11 @@ public class StockService {
         this.productDao = productDao;
     }
 
-
     public boolean isStockAvailable(int productId, int quantity) {
         Optional<Product> productOpt = productDao.findById(productId);
         return productOpt.isPresent() && productOpt.get().getQuantity() >= quantity;
     }
 
-    // Decrease stock when an order is placed
     public boolean decreaseStock(int productId, int quantity) {
         Optional<Product> productOpt = productDao.findById(productId);
         if (productOpt.isPresent()) {
@@ -36,7 +34,6 @@ public class StockService {
         }
         return false;
     }
-
 
     public void increaseStock(int productId, int quantity) {
         Optional<Product> productOpt = productDao.findById(productId);
