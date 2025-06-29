@@ -46,6 +46,7 @@ import java.util.List;
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/user/add").permitAll()
                         .requestMatchers("/product/all").permitAll()
+                        .requestMatchers("/product/{id}").permitAll()
                         .requestMatchers("/product/name/{name}").permitAll()
                         .requestMatchers("/product/collection/{collectionId}").permitAll()
                         .requestMatchers("/user/{id}").hasRole("USER")
