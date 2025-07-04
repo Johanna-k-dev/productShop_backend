@@ -42,38 +42,45 @@ import java.util.List;
             )
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                        .requestMatchers("/auth/register").permitAll()
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/user/add").permitAll()
-                        .requestMatchers("/product/all").permitAll()
-                        .requestMatchers("/product/{id}").permitAll()
-                        .requestMatchers("/product/name/{name}").permitAll()
-                        .requestMatchers("/product/collection/{collectionId}").permitAll()
-                        .requestMatchers("/user/{id}").hasRole("USER")
-                        .requestMatchers("/user/me").hasRole("USER")
-                        .requestMatchers("/user/email/{email}").hasRole("USER")
-                        .requestMatchers("/stock/decrease").hasRole("USER")
-                        .requestMatchers("/stock/increase").hasRole("USER")
-                        .requestMatchers("/user/update/{id}").hasRole("USER")
-                        .requestMatchers("/orders/add").hasRole("USER")
-                        .requestMatchers("/orders/{id}").hasRole("USER")
-                        .requestMatchers("/orders/update/{id}").hasRole("USER")
-                        .requestMatchers("/orders/delete/{id}").hasRole("USER")
-                        .requestMatchers("/order-products/add").hasRole("USER")
-                        .requestMatchers("/order-products/update/{orderId}/{productId}").hasRole("USER")
-                        .requestMatchers("/order-products/delete/{orderId}/{productId}").hasRole("USER")
-                        .requestMatchers("/order-products/{id}").hasRole("USER")
-                        .requestMatchers("/order-products/{id}").hasRole("USER")
-                        .requestMatchers("/invoice/generate").hasRole("USER")
-                        .requestMatchers("/invoice/get/{orderId}").hasRole("USER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/all").hasRole("ADMIN")
-                        .requestMatchers("/orders/all").hasRole("ADMIN")
-                        .requestMatchers("/order-products/all").hasRole("ADMIN")
-                        .requestMatchers("/product/add").hasRole("ADMIN")
-                        .requestMatchers("/product/update/{id}").hasRole("ADMIN")
-                        .requestMatchers("/product/delete").hasRole("ADMIN")
-                        .requestMatchers("/stock/check").hasRole("ADMIN")
+                        .requestMatchers(
+                                "/auth/register",
+                                "/auth/login",
+                                "/user/add",
+                                "/product/all",
+                                "/product/{id}",
+                                "/product/name/{name}",
+                                "/product/collection/{collectionId}"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                "/user/{id}",
+                                "/user/me",
+                                "/user/email/{email}",
+                                "/stock/decrease",
+                                "/stock/increase",
+                                "/user/update/{id}",
+                                "/orders/add",
+                                "/orders/{id}",
+                                "/orders/update/{id}",
+                                "/orders/delete/{id}",
+                                "/order-products/add",
+                                "/order-products/update/{orderId}/{productId}",
+                                "/order-products/delete/{orderId}/{productId}",
+                                "/order-products/{id}",
+                                "/invoice/generate",
+                                "/invoice/get/{orderId}"
+                        ).hasRole("USER")
+
+                        .requestMatchers(
+                                "/admin/**",
+                                "/user/all",
+                                "/orders/all",
+                                "/order-products/all",
+                                "/product/add",
+                                "/product/update/{id}",
+                                "/product/delete",
+                                "/stock/check"
+                        ).hasRole("ADMIN")
                         .anyRequest().authenticated()
             );
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
