@@ -51,7 +51,6 @@ import java.util.List;
                                 "/product/name/{name}",
                                 "/product/collection/{collectionId}"
                         ).permitAll()
-
                         .requestMatchers(
                                 "/user/{id}",
                                 "/user/me",
@@ -70,7 +69,6 @@ import java.util.List;
                                 "/invoice/generate",
                                 "/invoice/get/{orderId}"
                         ).hasRole("USER")
-
                         .requestMatchers(
                                 "/admin/**",
                                 "/user/all",
