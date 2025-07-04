@@ -1,15 +1,13 @@
 package com.greta.productShop.daos;
 
 import com.greta.productShop.entity.Order;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -18,9 +16,22 @@ import java.util.Optional;
 public class OrderDao {
 
     private final JdbcTemplate jdbcTemplate;
-    @Autowired
+
     public OrderDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public class OrderRowMapper implements RowMapper<Order> {
+
+        @Override
+        public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Order order = new Order();
+            order.setId(rs.getInt("id"));
+            order.setDate(rs.getObject("date", LocalDate.class));
+            order.setTotal(rs.getDouble("total"));
+            order.setUserId(rs.getInt("user_id"));
+            return order;
+        }
     }
 
     public int addOrder(Order order) {
@@ -39,35 +50,18 @@ public class OrderDao {
 
     public List<Order> getAllOrders() {
         String sql = "SELECT * FROM `order`";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Order order = new Order();
-            order.setId(rs.getInt("id"));
-            order.setDate(rs.getObject("date", LocalDate.class));
-            order.setTotal(rs.getDouble("total"));
-            return order;
-        });
+        return jdbcTemplate.query(sql, new OrderRowMapper());
     }
 
     public Order getOrderById(int id) {
         String sql = "SELECT * FROM `order` WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> {
-            Order order = new Order();
-            order.setId(rs.getInt("id"));
-            order.setDate(rs.getObject("date", LocalDate.class));
-            order.setTotal(rs.getDouble("total"));
-            return order;
-        });
+        return jdbcTemplate.queryForObject(sql, new OrderRowMapper(), id);
     }
 
     public Optional<Order> findOrderById(int orderId) {
         String sql = "SELECT * FROM `order` WHERE id = ?";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Order order = new Order();
-            order.setId(rs.getInt("id"));
-            order.setDate(rs.getObject("date", LocalDate.class));
-            order.setTotal(rs.getDouble("total"));
-            return order;
-        }, orderId).stream().findFirst();
+        return jdbcTemplate.query(sql, new OrderRowMapper(), orderId)
+                .stream().findFirst();
     }
 
     public void updateOrder(Order order) {
