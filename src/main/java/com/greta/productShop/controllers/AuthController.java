@@ -66,5 +66,4 @@ public class AuthController {
             return ResponseEntity.internalServerError().body("Unexpected error during login: " + e.getMessage());
         }
     }
-
 }
