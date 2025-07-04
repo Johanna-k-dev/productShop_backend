@@ -18,7 +18,7 @@ public class Product {
         this.price = price;
         this.quantity = quantity;
         this.description = description;
-        this.posterPath = posterPath; // Correct name
+        this.posterPath = posterPath;
     }
 
 
