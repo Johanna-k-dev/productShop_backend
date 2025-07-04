@@ -3,7 +3,6 @@ package com.greta.productShop.daos;
 import java.util.List;
 import java.util.Optional;
 
-// CrudDao sans findByEmail
 public interface CrudDao<T> {
     boolean save(T entity);
     Optional<T> findById(int id);
