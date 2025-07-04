@@ -1,5 +1,6 @@
 package com.greta.productShop.daos;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.greta.productShop.entity.User;
@@ -7,18 +8,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class UserDao implements CrudDao<User> {
 
-private final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-public UserDao(JdbcTemplate jdbcTemplate){
-    this.jdbcTemplate= jdbcTemplate;
-}
+    public UserDao(JdbcTemplate jdbcTemplate){
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     private final RowMapper<User> rowMapper = (rs, rowNum) -> new User(
             rs.getInt("id"),
@@ -35,71 +35,110 @@ public UserDao(JdbcTemplate jdbcTemplate){
     @Override
     public boolean save(User entity) {
         String sql = "INSERT INTO user (email, name, first_name, address, phone_number, postal_number, password, role ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql,
-                entity.getEmail(),
-                entity.getName(),
-                entity.getFirstName(),
-                entity.getAddress(),
-                entity.getPhoneNumber(),
-                entity.getPostalNumber(),
-                entity.getPassword(),
-                entity.getRole()
-        );
-        return false;
+        try {
+            int rows = jdbcTemplate.update(sql,
+                    entity.getEmail(),
+                    entity.getName(),
+                    entity.getFirstName(),
+                    entity.getAddress(),
+                    entity.getPhoneNumber(),
+                    entity.getPostalNumber(),
+                    entity.getPassword(),
+                    entity.getRole()
+            );
+            return rows > 0;
+        } catch (DataAccessException ex) {
+            System.err.println("Error while saving user: " + ex.getMessage());
+            return false;
+        }
     }
-
 
     @Override
     public Optional<User> findById(int id) {
         String sql = "SELECT * FROM user WHERE id = ?";
-        List<User> users = jdbcTemplate.query(sql, rowMapper, id);
-
-        if (users.isEmpty()) {
+        try {
+            List<User> users = jdbcTemplate.query(sql, rowMapper, id);
+            return users.isEmpty() ? Optional.empty() : Optional.of(users.get(0));
+        } catch (DataAccessException ex) {
+            System.err.println("Error while fetching user by id: " + ex.getMessage());
             return Optional.empty();
         }
-        return Optional.of(users.get(0));
     }
-
 
     public User findByEmail(String email) {
         String sql = "SELECT * FROM user WHERE email = ?";
-        return jdbcTemplate.query(sql, rowMapper, email)
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
+        try {
+            return jdbcTemplate.query(sql, rowMapper, email)
+                    .stream()
+                    .findFirst()
+                    .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
+        } catch (DataAccessException ex) {
+            System.err.println("Error while fetching user by email: " + ex.getMessage());
+            throw new UsernameNotFoundException("Utilisateur non trouvé");
+        }
     }
-    public  int getUserIdFromAuth(Authentication authentication) {
-        if(authentication == null){
+
+    public int getUserIdFromAuth(Authentication authentication) {
+        if (authentication == null) {
             throw new RuntimeException("Une erreur est survenue lors de l'authentification");
         }
-        String email = authentication.getName();
-        User user = findByEmail(email);
-        return user.getId();
-
+        try {
+            String email = authentication.getName();
+            User user = findByEmail(email);
+            return user.getId();
+        } catch (UsernameNotFoundException ex) {
+            System.err.println("Error while retrieving user id from authentication: " + ex.getMessage());
+            throw new RuntimeException("Utilisateur non trouvé dans le contexte d'authentification");
+        }
     }
+
     @Override
     public void update(User entity) {
         String sql = "UPDATE user SET email = ?, name = ?, first_name = ?, address = ?, phone_number = ?, postal_number = ? WHERE id = ?";
-        jdbcTemplate.update(sql, entity.getEmail(), entity.getName(), entity.getFirstName(), entity.getAddress(), entity.getPhoneNumber(), entity.getPostalNumber(), entity.getId());
+        try {
+            jdbcTemplate.update(sql,
+                    entity.getEmail(),
+                    entity.getName(),
+                    entity.getFirstName(),
+                    entity.getAddress(),
+                    entity.getPhoneNumber(),
+                    entity.getPostalNumber(),
+                    entity.getId());
+        } catch (DataAccessException ex) {
+            System.err.println("Error while updating user: " + ex.getMessage());
+        }
     }
 
     @Override
     public void deleteById(int id) {
         String sql = "DELETE FROM user WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        try {
+            jdbcTemplate.update(sql, id);
+        } catch (DataAccessException ex) {
+            System.err.println("Error while deleting user: " + ex.getMessage());
+        }
     }
 
     @Override
     public List<User> findAll() {
         String sql = "SELECT * FROM user";
-        return jdbcTemplate.query(sql, rowMapper);
+        try {
+            return jdbcTemplate.query(sql, rowMapper);
+        } catch (DataAccessException ex) {
+            System.err.println("Error while fetching all users: " + ex.getMessage());
+            return List.of();
+        }
     }
-
 
     public boolean existsByEmail(String email) {
         String sql = "SELECT COUNT(*) FROM user WHERE email = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
-        return count != null && count > 0; // Si le count est supérieur à 0, l'utilisateur existe
+        try {
+            Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
+            return count != null && count > 0;
+        } catch (DataAccessException ex) {
+            System.err.println("Error while checking if user exists by email: " + ex.getMessage());
+            return false;
+        }
     }
 
     public JdbcTemplate getJdbcTemplate() {
@@ -109,5 +148,5 @@ public UserDao(JdbcTemplate jdbcTemplate){
     public RowMapper<User> getRowMapper() {
         return rowMapper;
     }
-
 }
+
