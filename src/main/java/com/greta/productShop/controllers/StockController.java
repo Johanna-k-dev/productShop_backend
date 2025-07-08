@@ -16,13 +16,14 @@ public class StockController {
     @PostMapping("/decrease")
     public ResponseEntity<String> decreaseStock(@RequestParam int productId, @RequestParam int quantity) {
         boolean result = stockService.decreaseStock(productId, quantity);
-        return result ? ResponseEntity.ok("Stock décrémenté") : ResponseEntity.badRequest().body("Stock insuffisant");
+        return result ? ResponseEntity.ok("Stock decreased.")
+                : ResponseEntity.badRequest().body("Insufficient stock.");
     }
 
     @PostMapping("/increase")
     public ResponseEntity<String> increaseStock(@RequestParam int productId, @RequestParam int quantity) {
         stockService.increaseStock(productId, quantity);
-        return ResponseEntity.ok("Stock incrémenté");
+        return ResponseEntity.ok("Stock increased.");
     }
 
     @GetMapping("/check")

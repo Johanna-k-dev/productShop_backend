@@ -22,7 +22,7 @@ import java.util.Optional;
 public class UserController {
 
     private final UserDao userDao;
-    private final PasswordEncoder passwordEncoder; // Ajout
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     @Autowired

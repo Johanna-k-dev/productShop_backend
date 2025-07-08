@@ -24,9 +24,9 @@ public class ProductController {
     public ResponseEntity<String> addProduct(@RequestBody Product product) {
         try {
             productDao.save(product);
-            return new ResponseEntity<>("Produit ajouté avec succès.", HttpStatus.CREATED);
+            return new ResponseEntity<>("Product added successfully.", HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>("Erreur lors de l'ajout du produit. Vérifiez si le produit existe déjà.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error while adding the product. Check if the product already exists.", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -67,14 +67,14 @@ public class ProductController {
         try {
             Optional<Product> existingProduct = productDao.findById(id);
             if (existingProduct.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produit non trouvé.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found.");
             }
 
             product.setId(id);
             productDao.update(product);
-            return ResponseEntity.ok("Produit mis à jour avec succès.");
+            return ResponseEntity.ok("Product updated successfully.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while updating the product: " + e.getMessage());
         }
     }
 
@@ -83,10 +83,10 @@ public class ProductController {
     public ResponseEntity<String> deleteProduct(@PathVariable int id) {
         Optional<Product> product = productDao.findById(id);
         if (product.isEmpty()) {
-            return new ResponseEntity<>("Produit non trouvé.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Product not found.", HttpStatus.NOT_FOUND);
         }
         productDao.deleteById(id);
-        return new ResponseEntity<>("Produit supprimé avec succès.", HttpStatus.OK);
+        return new ResponseEntity<>("Product deleted successfully.", HttpStatus.OK);
     }
 }
 

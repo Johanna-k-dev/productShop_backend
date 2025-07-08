@@ -40,7 +40,7 @@ public class OrderController {
             response.put("id", orderId);
             return ResponseEntity.status(HttpStatus.CREATED).body(response.toString());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'ajout de la commande : " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while adding the order: " + e.getMessage());
         }
     }
 
@@ -74,9 +74,9 @@ public class OrderController {
         try {
             order.setId(id);
             orderDao.updateOrder(order);
-            return ResponseEntity.ok("Commande mise à jour avec succès !");
+            return ResponseEntity.ok("Order updated successfully!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour de la commande : " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while updating the order: " + e.getMessage());
         }
     }
 
@@ -84,9 +84,9 @@ public class OrderController {
     public ResponseEntity<String> deleteOrder(@PathVariable int id) {
         try {
             orderDao.deleteOrder(id);
-            return ResponseEntity.ok("Commande supprimée avec succès !");
+            return ResponseEntity.ok("Order deleted successfully!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la suppression de la commande : " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while deleting the order: " + e.getMessage());
         }
     }
 }

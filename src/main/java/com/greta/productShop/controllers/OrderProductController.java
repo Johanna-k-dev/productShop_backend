@@ -60,7 +60,7 @@ public class OrderProductController {
             for (OrderProduct item : orderDto.getItems()) {
                 if (!orderProductDao.productExists((int) item.getProductId())) {
                     Map<String, Object> error = new HashMap<>();
-                    error.put("error", "Le produit avec l’ID " + item.getProductId() + " n’existe pas.");
+                    error.put("error", "The product with ID " + item.getProductId() + " does not exist.");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
                 }
             }
@@ -79,13 +79,13 @@ public class OrderProductController {
 
             Map<String, Object> response = new HashMap<>();
             response.put("orderId", orderId);
-            response.put("message", "Commande enregistrée avec succès");
+            response.put("message", "Order successfully saved.");
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
-            error.put("error", "Erreur lors de l’enregistrement : " + e.getMessage());
+            error.put("error", "Error while saving the order: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
@@ -99,10 +99,10 @@ public class OrderProductController {
             orderProduct.setOrderId(orderId);
             orderProduct.setProductId(productId);
             orderProductDao.updateOrderProduct(orderProduct);
-            return ResponseEntity.ok("Commande mise à jour avec succès !");
+            return ResponseEntity.ok("Order updated successfully!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors de la mise à jour : " + e.getMessage());
+                    .body("Error while updating the order: " + e.getMessage());
         }
     }
 
@@ -112,7 +112,7 @@ public class OrderProductController {
             @PathVariable int productId) {
         try {
             orderProductDao.deleteOrderProduct(orderId, productId);
-            return ResponseEntity.ok("Produit supprimé de la commande avec succès !");
+            return ResponseEntity.ok("Product successfully removed from the order!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erreur : " + e.getMessage());
